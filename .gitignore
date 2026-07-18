@@ -1,0 +1,12 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+.pytest_cache/
+.ruff_cache/
+jobs/*
+!jobs/.gitkeep
+data/*.json
+data/*.csv
+!data/.gitkeep
