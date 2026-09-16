@@ -2,11 +2,15 @@
 .venv/
 __pycache__/
 *.py[cod]
+*.egg-info/
 .DS_Store
 .pytest_cache/
 .ruff_cache/
+build/
+dist/
 jobs/*
 !jobs/.gitkeep
+jobs/**/assets/
 data/*.json
 data/*.csv
 !data/.gitkeep

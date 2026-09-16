@@ -5,6 +5,10 @@ import math
 import random
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any, cast
+from uuid import uuid4
+
+from reloved_engine.hook_templates import HOOK_TEMPLATES, Pillar
 
 
 @dataclass(frozen=True)
@@ -30,16 +34,35 @@ class HookPerformanceTracker:
         self.path = Path(path)
         self.data = self._load()
 
-    def _load(self) -> dict:
+    def _load(self) -> dict[str, Any]:
         if not self.path.exists():
             return {"version": 1, "templates": {}, "posts": []}
-        return json.loads(self.path.read_text(encoding="utf-8"))
+        try:
+            data = json.loads(self.path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as error:
+            raise ValueError(f"Invalid performance data: {self.path}") from error
+        if not isinstance(data.get("templates"), dict) or not isinstance(data.get("posts"), list):
+            raise ValueError(f"Invalid performance data structure: {self.path}")  # noqa: TRY004
+        return cast(dict[str, Any], data)
 
     def save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps(self.data, indent=2), encoding="utf-8")
+        temporary = self.path.with_name(f".{self.path.name}.{uuid4().hex}.tmp")
+        temporary.write_text(json.dumps(self.data, indent=2) + "\n", encoding="utf-8")
+        temporary.replace(self.path)
 
     def log(self, result: PostResult) -> None:
+        if not result.post_id.strip() or not result.hook_template_id.strip():
+            raise ValueError("post_id and hook_template_id are required")
+        if any(value < 0 for value in (result.views, result.likes, result.comments, result.shares, result.saves)):
+            raise ValueError("metrics cannot be negative")
+        if result.pillar not in HOOK_TEMPLATES:
+            raise ValueError("pillar must be supported")
+        templates = {template.id for template in HOOK_TEMPLATES[cast(Pillar, result.pillar)]}
+        if result.hook_template_id not in templates:
+            raise ValueError("hook_template_id must belong to the supplied pillar")
+        if any(post["post_id"] == result.post_id for post in self.data["posts"]):
+            raise ValueError(f"metrics already logged for post_id {result.post_id}")
         template = self.data["templates"].setdefault(
             result.hook_template_id,
             {"pillar": result.pillar, "uses": 0, "average_score": 0.0},
@@ -51,6 +74,16 @@ class HookPerformanceTracker:
         template["uses"] = uses + 1
         self.data["posts"].append({**asdict(result), "score": result.score})
         self.save()
+
+    def report(self) -> list[dict[str, Any]]:
+        """Return hook performance in descending weighted-score order."""
+        return [
+            {"hook_template_id": template_id, **stats}
+            for template_id, stats in sorted(
+                self.data["templates"].items(),
+                key=lambda item: (-item[1]["average_score"], item[0]),
+            )
+        ]
 
     def choose(self, template_ids: list[str], exploration: float = 0.25) -> str:
         if not template_ids:
