@@ -25,24 +25,49 @@ def create_weekly_job(
     jobs_dir: str | Path = "jobs", date: str | None = None, seed: int | None = None, force: bool = False
 ) -> Path:
     """Create a reproducible seven-post draft job, preserving existing jobs."""
+    return _create_job(jobs_dir, date, seed, force, cadence="weekly", number_of_posts=7)
+
+
+def create_daily_job(
+    jobs_dir: str | Path = "jobs", date: str | None = None, seed: int | None = None, force: bool = False
+) -> Path:
+    """Create a reproducible one-post draft job, preserving existing jobs."""
+    return _create_job(jobs_dir, date, seed, force, cadence="daily", number_of_posts=1)
+
+
+def _create_job(
+    jobs_dir: str | Path,
+    date: str | None,
+    seed: int | None,
+    force: bool,
+    *,
+    cadence: str,
+    number_of_posts: int,
+) -> Path:
     now = datetime.now(timezone.utc)
     plan_date = date or now.date().isoformat()
     _validate_date(plan_date)
     root = Path(jobs_dir) / plan_date
-    original = root / "weekly_plan.json"
+    original = root / f"{cadence}_plan.json"
     if original.exists() and not force:
         raise JobError(f"Job already exists at {original}; use --force to create a revision")
-    output = original if not original.exists() else root / f"weekly_plan-{now.strftime('%H%M%S%f')}-{uuid4().hex[:8]}.json"
+    output = (
+        original
+        if not original.exists()
+        else root / f"{cadence}_plan-{now.strftime('%H%M%S%f')}-{uuid4().hex[:8]}.json"
+    )
     selected_seed = seed if seed is not None else random.SystemRandom().randrange(1, 2**63)
-    job_id = f"weekly-{plan_date}-{uuid4().hex[:8]}"
+    job_id = f"{cadence}-{plan_date}-{uuid4().hex[:8]}"
     rng_state = random.getstate()
     random.seed(selected_seed)
     try:
         tracker = HookPerformanceTracker(Path(jobs_dir).parent / "data" / "hook_performance.json")
         combinations = [(name, context) for name, contexts in OBJECT_LIBRARY.items() for context in contexts]
-        selected = random.sample(combinations, 7)
+        selected = random.sample(combinations, number_of_posts)
         posts = []
-        for index, (pillar, (object_name, context)) in enumerate(zip(weekly_plan(7), selected), start=1):
+        for index, (pillar, (object_name, context)) in enumerate(
+            zip(weekly_plan(number_of_posts), selected), start=1
+        ):
             candidates = HOOK_TEMPLATES[pillar]
             template_id = tracker.choose([candidate.id for candidate in candidates])
             template = next(candidate for candidate in candidates if candidate.id == template_id)
@@ -84,8 +109,9 @@ def load_job(path: str | Path) -> dict[str, Any]:
         raise JobError("Job has an invalid seed")
     if not _is_aware_timestamp(job.get("created_at")):
         raise JobError("Job has an invalid creation timestamp")
-    if not isinstance(job.get("posts"), list) or len(job["posts"]) != 7:
-        raise JobError("Job must contain exactly seven posts")
+    expected_posts = 1 if job["job_id"].startswith("daily-") else 7
+    if not isinstance(job.get("posts"), list) or len(job["posts"]) != expected_posts:
+        raise JobError(f"Job must contain exactly {expected_posts} post{'s' if expected_posts != 1 else ''}")
     seen_ids = set()
     for expected_day, post in enumerate(job["posts"], start=1):
         if not isinstance(post, dict) or post.get("day") != expected_day:

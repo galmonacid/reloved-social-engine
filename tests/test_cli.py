@@ -31,3 +31,19 @@ def test_cli_writes_deterministic_visual_plan(tmp_path, capsys):
     assert main(["visual-plan", str(job_file), post_id]) == 0
     assert (jobs / "2026-09-11" / "assets" / post_id / "image_prompts.json").exists()
     assert "Wrote deterministic image prompts" in capsys.readouterr().out
+
+
+def test_cli_prevents_accidental_billable_regeneration(tmp_path, capsys):
+    jobs = tmp_path / "jobs"
+    assert main(["create", "--jobs-dir", str(jobs), "--date", "2026-09-12", "--seed", "7"]) == 0
+    job_file = jobs / "2026-09-12" / "weekly_plan.json"
+    from reloved_engine.jobs import load_job
+
+    post_id = load_job(job_file)["posts"][0]["id"]
+    assert main(["review", str(job_file), post_id, "approve"]) == 0
+    raw = jobs / "2026-09-12" / "assets" / post_id / "raw"
+    raw.mkdir(parents=True)
+    (raw / "slide-1.png").write_bytes(b"existing")
+
+    assert main(["generate-images", str(job_file), post_id]) == 2
+    assert "use --force" in capsys.readouterr().err

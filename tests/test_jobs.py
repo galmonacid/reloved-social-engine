@@ -2,7 +2,29 @@ import json
 
 import pytest
 
-from reloved_engine.jobs import JobError, create_weekly_job, job_ready, load_job, review_post
+from reloved_engine.jobs import (
+    JobError,
+    create_daily_job,
+    create_weekly_job,
+    job_ready,
+    load_job,
+    review_post,
+)
+
+
+def test_create_daily_job_contains_one_reproducible_post(tmp_path):
+    first = create_daily_job(tmp_path / "jobs", "2026-10-03", seed=27)
+    job = load_job(first)
+
+    assert first.name == "daily_plan.json"
+    assert job["job_id"].startswith("daily-")
+    assert len(job["posts"]) == 1
+    assert job["posts"][0]["day"] == 1
+    with pytest.raises(JobError, match="already exists"):
+        create_daily_job(tmp_path / "jobs", "2026-10-03", seed=27)
+
+    revision = create_daily_job(tmp_path / "jobs", "2026-10-03", seed=27, force=True)
+    assert load_job(revision)["posts"][0]["draft"] == job["posts"][0]["draft"]
 
 
 def test_create_job_is_valid_reproducible_and_immutable(tmp_path):

@@ -2,10 +2,11 @@
 
 ## Scope and guardrails
 
-This tool produces local, editable **drafts**, not published content. It never
-connects to TikTok, Instagram, or a scheduler. A human must check facts,
-creative, brand fit, accessibility, final assets, and publication decisions.
-Never add platform credentials to this repository.
+This tool produces local, editable drafts and can publish one approved
+carousel through the official Instagram API after an explicit operator
+command. A human must check facts, creative, brand fit, accessibility, final
+assets, and every publication decision. Never add platform credentials to
+this repository.
 
 ## One-time setup
 
@@ -56,7 +57,9 @@ Confirm the installation with `reloved --help`.
    ```
 
 5. If the prompt plan is suitable and `OPENAI_API_KEY` is configured in the
-   terminal, create the six source images and then render the copy overlay.
+   terminal, create three source visuals and then render the copy overlay.
+   Each visual is reused for two adjacent slides, so the six-slide format is
+   preserved with half as many billable image requests.
    `generate-images` is billable and intentionally only works after approval.
 
    ```bash
@@ -64,9 +67,41 @@ Confirm the installation with `reloved --help`.
    reloved overlay jobs/2026-09-08/weekly_plan.json <post-id>
    ```
 
-6. Review all six final PNGs in `assets/<post-id>/final/`, then schedule or
-   publish them manually in the appropriate platform. Retain the platform post
-   ID for each published item.
+   The default is `gpt-image-1-mini` at `medium` quality. Only override
+   `--model` or `--quality` for posts where review shows that extra fidelity is
+   worth the additional cost. The command refuses to overwrite existing raw
+   images unless `--force` is supplied, preventing an accidental second set of
+   billable calls.
+
+6. Review all six final PNGs in `assets/<post-id>/final/`. Then render the
+   Instagram-specific 4:5 JPEG exports and review those too:
+
+   ```bash
+   reloved instagram-assets jobs/2026-09-08/weekly_plan.json <post-id>
+   ```
+
+   Upload the files from `assets/<post-id>/instagram/` to a public HTTPS
+   directory without changing the filenames. Meta must be able to fetch
+   `slide-1.jpg` through `slide-6.jpg` without authentication.
+
+7. Confirm that the Instagram account is Professional (Business or Creator)
+   and that its Meta app token has `instagram_business_basic` and
+   `instagram_business_content_publish`. Set `INSTAGRAM_USER_ID`,
+   `INSTAGRAM_ACCESS_TOKEN`, and `INSTAGRAM_IMAGE_BASE_URL` in the shell. Do
+   not use the Instagram password and do not save the token in the repository.
+
+8. Verify the target and preview the exact payload before publishing:
+
+   ```bash
+   reloved instagram-check
+   reloved publish-instagram jobs/2026-09-08/weekly_plan.json <post-id> --dry-run
+   reloved publish-instagram jobs/2026-09-08/weekly_plan.json <post-id>
+   ```
+
+   The final command creates six child containers, waits for each one, creates
+   and waits for the carousel container, publishes it, and saves its media ID
+   and permalink in `assets/<post-id>/instagram_publication.json`. It will not
+   publish the same post a second time unless `--allow-republish` is supplied.
 
 ## Record learning
 
@@ -89,3 +124,31 @@ performance or replace creative judgement.
   overwrite stored data.
 - `jobs/` and `data/` are local and ignored by Git. Back up approved plans and
   source metric exports where your team stores operational records.
+
+## End-to-end weekly command
+
+For the authorised automatic workflow, create a dedicated secondary Firebase
+Hosting site once. Never target the existing app's default site:
+
+```bash
+firebase login
+firebase hosting:sites:create reloved-social-media --project <firebase-project-id>
+export FIREBASE_PROJECT_ID="<firebase-project-id>"
+export FIREBASE_HOSTING_SITE="reloved-social-media"
+export INSTAGRAM_USER_ID="<professional-account-id>"
+export INSTAGRAM_ACCESS_TOKEN="<access-token>"
+export OPENAI_API_KEY="<openai-key>"
+```
+
+Then run:
+
+```bash
+python scripts/run_weekly_full.py --date 2026-10-05 --seed 42
+```
+
+This generates and approves seven posts, renders the TikTok and Instagram
+assets, deploys all 42 Instagram JPEGs in one Firebase release, and publishes
+all seven carousels immediately. `--dry-run` stops before every external API
+or deployment action. The command refuses to deploy to a site whose ID equals
+the Firebase project ID, which protects the original app's default Hosting
+release.

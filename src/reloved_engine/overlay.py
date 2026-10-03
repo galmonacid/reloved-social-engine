@@ -9,6 +9,9 @@ from PIL import Image, ImageDraw, ImageFont
 
 CANVAS = (1080, 1920)
 BOX = (90, 160, 990, 680)
+INSTAGRAM_CANVAS = (1080, 1350)
+INSTAGRAM_BOX = (90, 110, 990, 630)
+PANEL_ALPHA = 115  # 45% opaque black, per the visual lock.
 FONT_CANDIDATES = (
     "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
@@ -17,16 +20,38 @@ FONT_CANDIDATES = (
 
 def render_overlays(image_paths: Sequence[str | Path], slides: Sequence[str], output_dir: str | Path) -> list[Path]:
     """Crop six source images to 9:16 and add readable, consistent copy overlays."""
+    return _render_overlays(image_paths, slides, output_dir, CANVAS, BOX, "PNG")
+
+
+def render_instagram_overlays(
+    image_paths: Sequence[str | Path], slides: Sequence[str], output_dir: str | Path
+) -> list[Path]:
+    """Render six Instagram API-compatible 4:5 baseline JPEG slides."""
+    return _render_overlays(
+        image_paths, slides, output_dir, INSTAGRAM_CANVAS, INSTAGRAM_BOX, "JPEG"
+    )
+
+
+def _render_overlays(
+    image_paths: Sequence[str | Path],
+    slides: Sequence[str],
+    output_dir: str | Path,
+    canvas_size: tuple[int, int],
+    box: tuple[int, int, int, int],
+    image_format: str,
+) -> list[Path]:
     if len(image_paths) != 6 or len(slides) != 6:
         raise ValueError("exactly six images and six slides are required")
     directory = Path(output_dir)
     directory.mkdir(parents=True, exist_ok=True)
     results: list[Path] = []
     for index, (image_path, text) in enumerate(zip(image_paths, slides), start=1):
-        canvas = _cover(Image.open(image_path).convert("RGB"), CANVAS).convert("RGBA")
-        _draw_copy(canvas, text, is_hook=index == 1)
-        target = directory / f"slide-{index}.png"
-        canvas.convert("RGB").save(target, "PNG", optimize=True)
+        canvas = _cover(Image.open(image_path).convert("RGB"), canvas_size).convert("RGBA")
+        _draw_copy(canvas, text, is_hook=index == 1, box=box)
+        suffix = ".jpg" if image_format == "JPEG" else ".png"
+        target = directory / f"slide-{index}{suffix}"
+        save_options = {"quality": 92, "progressive": True} if image_format == "JPEG" else {}
+        canvas.convert("RGB").save(target, image_format, optimize=True, **save_options)
         results.append(target)
     return results
 
@@ -39,15 +64,26 @@ def _cover(image: Image.Image, size: tuple[int, int]) -> Image.Image:
     return resized.crop((left, top, left + size[0], top + size[1]))
 
 
-def _draw_copy(canvas: Image.Image, text: str, is_hook: bool) -> None:
-    draw = ImageDraw.Draw(canvas, "RGBA")
+def _draw_copy(
+    canvas: Image.Image, text: str, is_hook: bool, box: tuple[int, int, int, int]
+) -> None:
     max_size = 104 if is_hook else 76
+    draw = ImageDraw.Draw(canvas, "RGBA")
     font, lines, line_height = _fit_text(draw, text, max_size)
     text_height = line_height * len(lines)
     box_height = max(120, text_height + 56)
-    left, top, right, _ = BOX
+    left, top, right, _ = box
     bottom = top + box_height
-    draw.rounded_rectangle((left, top, right, bottom), radius=28, fill=(0, 0, 0, 115))
+    # Draw the translucent panel on a separate layer, then composite it. Drawing
+    # it straight onto ``canvas`` replaces its alpha channel; subsequent RGB
+    # export would make the intended translucent panel solid black.
+    panel = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    ImageDraw.Draw(panel).rounded_rectangle(
+        (left, top, right, bottom), radius=28, fill=(0, 0, 0, PANEL_ALPHA)
+    )
+    canvas.alpha_composite(panel)
+
+    draw = ImageDraw.Draw(canvas, "RGBA")
     y = top + 28
     for line in lines:
         draw.text((left + 34, y), line, font=font, fill=(255, 255, 255, 255))
