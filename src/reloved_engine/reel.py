@@ -59,8 +59,17 @@ def render_reel_video(
     if slide_seconds < 0.5 or slide_seconds > 10:
         raise JobError("slide_seconds must be between 0.5 and 10")
     ffmpeg = binary_lookup(ffmpeg_binary)
+    if ffmpeg is None and ffmpeg_binary == "ffmpeg" and binary_lookup is shutil.which:
+        try:
+            import imageio_ffmpeg  # type: ignore[import-not-found]
+
+            ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+        except (ImportError, RuntimeError):
+            ffmpeg = None
     if ffmpeg is None:
-        raise JobError("ffmpeg is required to render a Reel video")
+        raise JobError(
+            "ffmpeg is required to render a Reel video; install project dependencies first"
+        )
     slides = reel_slide_paths(job_file, post_id)
     output = reel_video_path(job_file, post_id)
     if output.exists():

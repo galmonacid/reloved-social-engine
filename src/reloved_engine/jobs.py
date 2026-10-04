@@ -12,6 +12,7 @@ from uuid import uuid4
 
 from reloved_engine.content import build_draft, validate_draft
 from reloved_engine.hook_templates import HOOK_TEMPLATES, Pillar, render_hook
+from reloved_engine.market_config import TARGET_CITY, TARGET_COUNTY, TARGET_MARKET
 from reloved_engine.object_library import OBJECT_LIBRARY
 from reloved_engine.performance_tracker import HookPerformanceTracker
 from reloved_engine.scheduler import weekly_plan
@@ -80,14 +81,26 @@ def _create_job(
                 "id": f"{job_id}-{index}", "day": index, "pillar": pillar, "object": object_name,
                 "context": context, "hook_template_id": template.id, "hook": hook, "status": "PENDING_REVIEW",
                 "review": None,
-                "review_flags": (["Verify the factual claim and source before approval"]
-                                 if template.id == "A1_ratio" else []),
+                "review_flags": [],
                 "draft": draft,
             })
     finally:
         random.setstate(rng_state)
-    job = {"version": 1, "job_id": job_id, "created_at": now.isoformat(),
-           "timezone": "Europe/London", "date": plan_date, "seed": selected_seed, "posts": posts}
+    job = {
+        "version": 1,
+        "job_id": job_id,
+        "created_at": now.isoformat(),
+        "timezone": "Europe/London",
+        "date": plan_date,
+        "seed": selected_seed,
+        "campaign": {
+            "market": TARGET_MARKET,
+            "launch_city": TARGET_CITY,
+            "county": TARGET_COUNTY,
+            "strategy": "city-first supply and demand concentration",
+        },
+        "posts": posts,
+    }
     _atomic_json_write(output, job)
     return output
 
@@ -104,6 +117,9 @@ def load_job(path: str | Path) -> dict[str, Any]:
         raise JobError("Job has an invalid schema")
     if not isinstance(job.get("date"), str) or job.get("timezone") != "Europe/London":
         raise JobError("Job has an invalid date")
+    campaign = job.get("campaign")
+    if not isinstance(campaign, dict) or campaign.get("launch_city") != TARGET_CITY:
+        raise JobError(f"Job must target the launch city {TARGET_CITY}")
     _validate_date(job["date"])
     if not isinstance(job.get("seed"), int) or isinstance(job["seed"], bool):
         raise JobError("Job has an invalid seed")

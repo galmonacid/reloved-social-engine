@@ -6,13 +6,16 @@ signage, receipts or logos. Slide copy is always rendered afterwards by the
 local overlay module.
 
 The three permitted scenes are `FLAT`, `STREET` and `SHOP`. Each is locked to
-casual iPhone realism in recognisably British settings: natural light, ordinary
-wear, slight camera grain, no staged or cinematic treatment and no American
-visual cues. Scene sequences are defined per pillar in
+casual iPhone realism in recognisably Milton Keynes settings: natural light,
+ordinary wear, slight camera grain, no staged or cinematic treatment and no
+American visual cues. Street scenes use plausible local cues such as mixed
+red-brick and modern housing, green verges, broad pavements and redway-style
+shared paths. They do not depend on landmarks or readable place signage.
+Scene sequences are defined per pillar in
 `reloved_engine.image_prompt_builder`.
 
 For backwards compatibility, `FLAT` remains the scene-plan key, but its visual
-lock represents a typical modest British family terraced house. Interiors are
+lock represents a typical modest Milton Keynes family home. Interiors are
 comfortably cluttered with the believable accumulation of busy family life—such
 as coats, shoes, toys, laundry, post and crowded shelves—without appearing dirty
 or hoarded. Minimalist, luxury and show-home styling are explicitly excluded so

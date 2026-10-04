@@ -2,7 +2,7 @@
 
 ## Verdict
 
-**v1 is ready for local, human-reviewed weekly operation.** It is deliberately
+**v1 is ready for Milton Keynes-focused, human-reviewed weekly operation.** It is deliberately
 not an unattended publishing system: publishing and media generation remain
 manual, credential-free boundaries.
 

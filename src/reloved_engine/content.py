@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from reloved_engine.hook_templates import Pillar
+from reloved_engine.market_config import TARGET_CITY, TARGET_HASHTAG, TARGET_MARKET
 
 SCENES = ("FLAT", "STREET", "SHOP")
 BANNED_TERMS = ("trash", "apartment", "thrift store", "dumpster", "yard sale", "$")
@@ -31,7 +32,8 @@ class DraftCreative:
     def as_dict(self) -> dict[str, Any]:
         return {
             "version": "v1.2",
-            "market": "UK",
+            "market": TARGET_MARKET,
+            "target_location": TARGET_CITY,
             "language": "en-GB",
             "platform": "tiktok",
             "format": "photo_slideshow_6",
@@ -55,23 +57,23 @@ def build_draft(pillar: Pillar, object_name: str, context: str, hook: str) -> Dr
         "A_MACRO": [
             f"This {object_name} could still be useful.",
             "Not every unused thing is waste.",
-            "Someone nearby may need it.",
-            "Passing it on keeps it in use.",
+            f"Someone in {TARGET_CITY} may need it.",
+            "Passing it on nearby keeps it in use.",
         ],
         "B_DONOR": [
             f"This {object_name} still worked.",
             "I just did not need it anymore.",
             "Throwing it away did not feel right.",
-            "Someone nearby could use it.",
+            f"Someone in {TARGET_CITY} could use it.",
         ],
         "C_FINDER": [
             f"A useful {object_name} was already nearby.",
             "I did not need to buy one new.",
-            "Someone else was passing one on.",
+            f"Someone in {TARGET_CITY} was passing one on.",
             "That is better for my wallet too.",
         ],
     }[pillar]
-    cta = "Find or pass on useful things with ReLoved."
+    cta = f"Find or pass it on in {TARGET_CITY} with ReLoved."
     return DraftCreative(
         pillar=pillar,
         hook=hook,
@@ -81,10 +83,10 @@ def build_draft(pillar: Pillar, object_name: str, context: str, hook: str) -> Dr
         cta=cta,
         caption=(
             f"A useful {object_name} can have a next home.\n"
-            "Pass it on locally, free of charge.\n"
+            f"Pass it on in {TARGET_CITY}, free of charge.\n"
             "ReLoved makes room for what matters."
         ),
-        hashtags=["#ReLoved", "#Reuse", "#GiveAway", "#Local"],
+        hashtags=["#ReLoved", TARGET_HASHTAG, "#MKLocal", "#Reuse", "#GiveAway"],
         scene_plan={
             "A_MACRO": ["STREET", "STREET", "FLAT", "STREET", "STREET", "STREET"],
             "B_DONOR": ["FLAT", "FLAT", "FLAT", "FLAT", "STREET", "STREET"],
@@ -99,12 +101,15 @@ def validate_draft(draft: dict[str, Any], pillar: str, supplied_hook: str) -> li
         return ["draft must be an object"]
     errors: list[str] = []
     required_values = {
-        "version": "v1.2", "market": "UK", "language": "en-GB", "platform": "tiktok",
+        "version": "v1.2", "market": TARGET_MARKET, "target_location": TARGET_CITY,
+        "language": "en-GB", "platform": "tiktok",
         "format": "photo_slideshow_6", "pillar": pillar,
     }
     for key, expected in required_values.items():
         if draft.get(key) != expected:
             errors.append(f"{key} must equal {expected}")
+    if TARGET_CITY.lower() not in " ".join(_strings(draft)).lower():
+        errors.append(f"content must mention {TARGET_CITY}")
     creative = draft.get("creative")
     if not isinstance(creative, dict):
         return ["creative must be an object"]

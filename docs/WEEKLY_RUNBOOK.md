@@ -2,11 +2,11 @@
 
 ## Scope and guardrails
 
-This tool produces local, editable drafts and can publish one approved
-carousel through the official Instagram API after an explicit operator
-command. A human must check facts, creative, brand fit, accessibility, final
-assets, and every publication decision. Never add platform credentials to
-this repository.
+This tool produces local, editable drafts for ReLoved's Milton Keynes launch
+and can publish one approved carousel through the official Instagram API after
+an explicit operator command. A human must check facts, local relevance,
+creative, brand fit, accessibility, final assets, and every publication
+decision. Never add platform credentials to this repository.
 
 ## One-time setup
 
@@ -31,9 +31,10 @@ Confirm the installation with `reloved --help`.
 
 2. Inspect the job and read every full `draft` in
    `jobs/2026-09-08/weekly_plan.json`. In particular, resolve any
-   `review_flags`; `A1_ratio` requires a current, credible source before it can
-   be used. Check UK phrasing, appropriateness, repeated themes, all claims,
-   slide progression, CTA, caption, visual treatment, and accessibility.
+   `review_flags`. Check that Milton Keynes appears naturally, that the post is
+   useful to local donors or finders, and that `#MiltonKeynes` and `#MKLocal`
+   are present. Also check UK phrasing, appropriateness, repeated themes, all
+   claims, slide progression, CTA, caption, visual treatment, and accessibility.
 
    ```bash
    reloved inspect jobs/2026-09-08/weekly_plan.json
@@ -73,7 +74,9 @@ Confirm the installation with `reloved --help`.
    images unless `--force` is supplied, preventing an accidental second set of
    billable calls.
 
-6. Review all six final PNGs in `assets/<post-id>/final/`. Then render the
+6. Review all six final PNGs in `assets/<post-id>/final/`. Confirm that the
+   scenes feel plausible for Milton Keynes without relying on generated text,
+   logos or false landmark specificity. Then render the
    Instagram-specific 4:5 JPEG exports and review those too:
 
    ```bash
@@ -118,6 +121,8 @@ performance or replace creative judgement.
 
 ## Recovery
 
+- Do not resume generic UK jobs created before the Milton Keynes localisation.
+  The validator rejects them; create a fresh dated job with the current config.
 - Creating an existing date fails without changing its file. Use `--force` to
   create a timestamped revision deliberately; the original remains intact.
 - Invalid data or duplicate platform post IDs fail with an error and do not

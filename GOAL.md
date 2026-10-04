@@ -4,18 +4,17 @@
 
 Deliver a reliable, local, human-in-the-loop workflow for producing, reviewing,
 approving, measuring, and learning from ReLoved's seven-post weekly social
-content plan. v1 deliberately does **not** publish posts or generate media:
-both require credentials and human creative approval outside this repository.
+content plan, initially concentrating donors and finders in Milton Keynes.
 
 ## Measurable acceptance criteria
 
 1. A command creates a seven-post weekly job with a stable ID, UTC/London
    timestamps, seed, strategic pillar mix, unique object/context combinations,
-   and a six-slide British-English draft for every post.
+   and a six-slide Milton Keynes-specific British-English draft for every post.
 2. Every generated draft is validated against the documented v1.2 content
    contract: six concise slides, supplied hook on slide one, ReLoved CTA on
-   slide six, supported pillars, no banned terms, five-or-fewer hashtags, and
-   valid optional scene-plan values.
+   slide six, Milton Keynes campaign metadata and mentions, supported pillars,
+   no banned terms, five-or-fewer hashtags, and valid optional scene-plan values.
 3. A job is immutable by default: a second command cannot silently replace it;
    an explicit force option creates a timestamped revision while preserving the
    original.

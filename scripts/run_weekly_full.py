@@ -34,13 +34,14 @@ from reloved_engine.instagram import (
     publish_post,
 )
 from reloved_engine.jobs import JobError, create_weekly_job, load_job, review_post
+from reloved_engine.market_config import TARGET_CITY
 
-DEFAULT_NOTE = "Automatically approved by scripts/run_weekly_full.py"
+DEFAULT_NOTE = f"Automatically approved for {TARGET_CITY} by scripts/run_weekly_full.py"
 
 
 def parser() -> argparse.ArgumentParser:
     command = argparse.ArgumentParser(
-        description="Generate, host, and publish one complete ReLoved Instagram week."
+        description=f"Generate and publish one complete {TARGET_CITY} ReLoved Instagram week."
     )
     command.add_argument("--date", help="Job date in YYYY-MM-DD (defaults to today UTC)")
     command.add_argument(
@@ -97,7 +98,7 @@ def run(args: argparse.Namespace) -> Path:
     else:
         job_file = create_weekly_job(args.jobs_dir, args.date, args.seed, args.force)
         job = load_job(job_file)
-        print(f"Created job: {job_file}")
+        print(f"Created {TARGET_CITY} campaign job: {job_file}")
 
         for post in job["posts"]:
             post_id = post["id"]
@@ -154,7 +155,7 @@ def run(args: argparse.Namespace) -> Path:
         receipt = publish_post(job_file, post_id, hosted_urls[post_id], publisher)
         print(f"Published {post_id}: {receipt.get('permalink') or receipt['media_id']}")
 
-    print(f"Weekly production and publication complete: {job_file}")
+    print(f"{TARGET_CITY} weekly production and publication complete: {job_file}")
     return job_file
 
 

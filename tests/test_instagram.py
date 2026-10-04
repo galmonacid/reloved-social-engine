@@ -156,6 +156,27 @@ def test_selects_trending_audio_and_publishes_reel_with_audio_configuration():
     assert result["media_id"] == "id-2"
 
 
+def test_facebook_login_account_check_uses_supported_fields():
+    class AccountSession:
+        def __init__(self):
+            self.gets = []
+
+        def get(self, url, **kwargs):
+            self.gets.append((url, kwargs))
+            return FakeResponse({"id": "ig-user-1", "username": "reloved"})
+
+    session = AccountSession()
+    publisher = InstagramPublisher(
+        "ig-user-1",
+        "facebook-page-token",
+        graph_root=FACEBOOK_GRAPH_ROOT,
+        session=session,
+    )
+
+    assert publisher.account()["username"] == "reloved"
+    assert session.gets[0][1]["params"]["fields"] == "id,username"
+
+
 def test_cli_dry_run_does_not_require_instagram_credentials(tmp_path, capsys):
     from reloved_engine.cli import main
 

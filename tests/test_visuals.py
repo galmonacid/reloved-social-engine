@@ -17,10 +17,10 @@ def test_image_prompts_are_locked_textless_and_follow_scene_plan():
     )
 
     assert len(prompts) == 6
-    assert "British family terraced house" in prompts[0]
+    assert "Milton Keynes family home" in prompts[0]
     assert "comfortably cluttered" in prompts[0]
     assert "without looking dirty or hoarded" in prompts[0]
-    assert "UK charity shop" in prompts[1]
+    assert "Milton Keynes charity shop" in prompts[1]
     assert all("No readable text" in prompt for prompt in prompts)
     assert "bright, warm and quietly optimistic" in prompts[-1]
     assert "Avoid cloudy skies" in prompts[-1]
@@ -45,6 +45,14 @@ def test_street_closing_prompt_replaces_overcast_light():
 
     assert "Bright, clear late-afternoon British daylight" in prompt
     assert "overcast" not in prompt
+
+
+def test_street_prompt_uses_milton_keynes_visual_cues():
+    prompt = build_image_prompts("A_MACRO", "chair")[0]
+
+    assert "Milton Keynes residential neighbourhood" in prompt
+    assert "green verges" in prompt
+    assert "redway-style shared path" in prompt
 
 
 def test_overlay_renders_six_9_by_16_pngs(tmp_path):

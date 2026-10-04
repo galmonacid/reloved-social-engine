@@ -25,11 +25,14 @@ from reloved_engine.instagram import (
     validate_image_urls,
 )
 from reloved_engine.jobs import JobError, create_weekly_job, job_ready, load_job, review_post
+from reloved_engine.market_config import TARGET_CITY
 from reloved_engine.performance_tracker import HookPerformanceTracker, PostResult
 
 
 def parser() -> argparse.ArgumentParser:
-    command = argparse.ArgumentParser(description="ReLoved Social Engine local workflow")
+    command = argparse.ArgumentParser(
+        description=f"ReLoved Social Engine {TARGET_CITY} launch workflow"
+    )
     subcommands = command.add_subparsers(dest="command", required=True)
     create = subcommands.add_parser("create", help="Create a seven-post weekly draft job")
     create.add_argument("--date", help="Job date in YYYY-MM-DD (defaults to today UTC)")
@@ -118,11 +121,12 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "create":
             path = create_weekly_job(args.jobs_dir, args.date, args.seed, args.force)
-            print(f"Created 7-post draft job at {path}")
+            print(f"Created 7-post {TARGET_CITY} draft job at {path}")
         elif args.command == "inspect":
             job = load_job(args.job_file)
             print(json.dumps({
-                "job_id": job["job_id"], "date": job["date"], "ready": job_ready(job),
+                "job_id": job["job_id"], "date": job["date"],
+                "campaign": job["campaign"], "ready": job_ready(job),
                 "posts": [{"id": post["id"], "day": post["day"], "status": post["status"], "hook": post["hook"]}
                           for post in job["posts"]],
             }, indent=2))

@@ -23,12 +23,15 @@ from reloved_engine.instagram import (
     publish_post,
 )
 from reloved_engine.jobs import JobError, create_daily_job, load_job, review_post
+from reloved_engine.market_config import TARGET_CITY
 
-DEFAULT_NOTE = "Automatically approved by scripts/run_daily_carousel.py"
+DEFAULT_NOTE = f"Automatically approved for {TARGET_CITY} by scripts/run_daily_carousel.py"
 
 
 def parser() -> argparse.ArgumentParser:
-    command = argparse.ArgumentParser(description="Generate, host, and publish one daily carousel.")
+    command = argparse.ArgumentParser(
+        description=f"Generate, host, and publish one daily {TARGET_CITY} carousel."
+    )
     command.add_argument("--date", help="Job date in YYYY-MM-DD (defaults to today UTC)")
     command.add_argument("--resume-job", help="Resume an already rendered daily job")
     command.add_argument("--seed", type=int, help="Seed for reproducible post selection")
@@ -99,7 +102,10 @@ def run(args: argparse.Namespace) -> Path:
         job_file, [post_id], args.firebase_project, args.firebase_site
     )[post_id]
     receipt = publish_post(job_file, post_id, hosted, publisher)
-    print(f"Published daily carousel: {receipt.get('permalink') or receipt['media_id']}")
+    print(
+        f"Published daily {TARGET_CITY} carousel: "
+        f"{receipt.get('permalink') or receipt['media_id']}"
+    )
     return job_file
 
 

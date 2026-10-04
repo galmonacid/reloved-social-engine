@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "AI-assisted social content engine for ReLoved"
 requires-python = ">=3.9"
 dependencies = [
+  "imageio-ffmpeg>=0.5.1",
   "openai>=1.68.0",
   "Pillow>=10.4.0",
   "pydantic>=2.9.0",

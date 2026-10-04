@@ -138,9 +138,14 @@ class InstagramPublisher:
 
     def account(self) -> dict[str, Any]:
         """Fetch the connected professional account for setup verification."""
+        fields = (
+            "id,username"
+            if self.graph_root == FACEBOOK_GRAPH_ROOT
+            else "id,username,account_type,media_count"
+        )
         payload = self._get(
             self.instagram_user_id,
-            {"fields": "id,username,account_type,media_count"},
+            {"fields": fields},
         )
         return payload
 

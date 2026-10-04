@@ -16,25 +16,25 @@ class HookTemplate:
 
 HOOK_TEMPLATES: dict[Pillar, list[HookTemplate]] = {
     "A_MACRO": [
-        HookTemplate("A1_ratio", "A_MACRO", "Only 1 in 5 gets recycled."),
-        HookTemplate("A2_speed", "A_MACRO", "We bin things too quickly."),
-        HookTemplate("A3_truth", "A_MACRO", "Recycling isn't enough."),
-        HookTemplate("A4_works", "A_MACRO", "Most of it still works."),
-        HookTemplate("A5_rubbish", "A_MACRO", "It wasn't rubbish."),
+        HookTemplate("A1_ratio", "A_MACRO", "Could Milton Keynes reuse more?"),
+        HookTemplate("A2_speed", "A_MACRO", "Milton Keynes bins things too quickly."),
+        HookTemplate("A3_truth", "A_MACRO", "Milton Keynes, recycling isn't enough."),
+        HookTemplate("A4_works", "A_MACRO", "Milton Keynes, this still works."),
+        HookTemplate("A5_rubbish", "A_MACRO", "Milton Keynes, it wasn't rubbish."),
     ],
     "B_DONOR": [
-        HookTemplate("B1_worked", "B_DONOR", "It still worked."),
-        HookTemplate("B2_unused", "B_DONOR", "I didn't need it anymore."),
-        HookTemplate("B3_space", "B_DONOR", "My flat was too full."),
-        HookTemplate("B4_wrong", "B_DONOR", "Binning it felt wrong."),
-        HookTemplate("B5_pause", "B_DONOR", "I paused before binning it."),
+        HookTemplate("B1_worked", "B_DONOR", "Milton Keynes, this still worked."),
+        HookTemplate("B2_unused", "B_DONOR", "Milton Keynes, I no longer needed this."),
+        HookTemplate("B3_space", "B_DONOR", "My Milton Keynes home was too full."),
+        HookTemplate("B4_wrong", "B_DONOR", "Milton Keynes, binning it felt wrong."),
+        HookTemplate("B5_pause", "B_DONOR", "Milton Keynes, pause before binning it."),
     ],
     "C_FINDER": [
-        HookTemplate("C1_price", "C_FINDER", "Why pay £{price}?"),
-        HookTemplate("C2_almost", "C_FINDER", "I almost bought one."),
-        HookTemplate("C3_spare", "C_FINDER", "Someone else didn't need it."),
-        HookTemplate("C4_zero", "C_FINDER", "£0 felt better."),
-        HookTemplate("C5_new", "C_FINDER", "Why buy new?"),
+        HookTemplate("C1_price", "C_FINDER", "Milton Keynes, why pay £{price}?"),
+        HookTemplate("C2_almost", "C_FINDER", "Milton Keynes, I almost bought one."),
+        HookTemplate("C3_spare", "C_FINDER", "Someone in Milton Keynes had one spare."),
+        HookTemplate("C4_zero", "C_FINDER", "Milton Keynes, £0 felt better."),
+        HookTemplate("C5_new", "C_FINDER", "Milton Keynes, why buy new?"),
     ],
 }
 

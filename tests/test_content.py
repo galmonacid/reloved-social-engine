@@ -5,6 +5,10 @@ def test_generated_draft_meets_contract():
     draft = build_draft("B_DONOR", "kettle", "moving flat", "It still worked.").as_dict()
 
     assert validate_draft(draft, "B_DONOR", "It still worked.") == []
+    assert draft["market"] == "Milton Keynes, UK"
+    assert draft["target_location"] == "Milton Keynes"
+    assert "Milton Keynes" in draft["creative"]["slides"][4]
+    assert "#MiltonKeynes" in draft["hashtags"]
 
 
 def test_generated_drafts_use_pillar_specific_narrative_and_scene_plans():
@@ -41,3 +45,12 @@ def test_validator_enforces_all_top_level_and_conciseness_rules():
     assert "pillar must equal B_DONOR" in errors
     assert "slides must be below 70 characters" in errors
     assert "caption must be a string containing at most five lines" in errors
+
+
+def test_validator_requires_launch_location():
+    draft = build_draft("B_DONOR", "kettle", "moving flat", "It still worked.").as_dict()
+    draft["target_location"] = "London"
+
+    errors = validate_draft(draft, "B_DONOR", "It still worked.")
+
+    assert "target_location must equal Milton Keynes" in errors

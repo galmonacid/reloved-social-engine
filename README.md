@@ -1,9 +1,15 @@
 # ReLoved Social Engine
 
-A local, human-in-the-loop workflow for ReLoved's UK TikTok and Instagram
-content. It creates a reviewable seven-post weekly job, with a validated
-British-English six-slide draft for every post; records approvals and observed
-performance; and uses recorded hook performance in future plans.
+A local, human-in-the-loop workflow for ReLoved's Milton Keynes launch on
+TikTok and Instagram. It creates a reviewable seven-post weekly job, with a
+validated, Milton Keynes-specific British-English six-slide draft for every
+post; records approvals and observed performance; and uses recorded hook
+performance in future plans.
+
+The launch strategy is deliberately city-first: build a useful concentration
+of donors and finders in Milton Keynes before expanding to other UK markets.
+The shared market settings live in `reloved_engine.market_config` so copy,
+metadata, scripts, hashtags and visual generation stay aligned.
 
 ## Current operational status
 
@@ -18,16 +24,23 @@ Use [the weekly Codex runbook](docs/WEEKLY_RUNBOOK.md) for the supported workflo
 
 ## What works today
 
-- Produces reproducible seven-post jobs with a seed, timestamps, unique
-  object/context pairs, and the 60% donor / 35% macro / 5% finder strategy.
+- Produces reproducible seven-post Milton Keynes campaign jobs with a seed,
+  timestamps, unique object/context pairs, and the 60% donor / 35% macro / 5%
+  finder strategy.
 - Creates and validates editable six-slide copy drafts against the v1.2
   contract, including British-English and ReLoved CTA requirements.
 - Preserves existing jobs by default; `--force` creates a new revision.
 - Records individual approval/rejection decisions with notes.
 - Logs non-negative metrics once per published-post ID and ranks hook templates
   by weighted engagement score.
-- Generates six locked, textless UK visual prompts per approved post, creates
-  three source visuals, and reuses them across six consistent 9:16 final PNGs.
+- Generates six locked, textless Milton Keynes visual prompts per approved
+  post, creates three source visuals, and reuses them across six consistent
+  9:16 final PNGs.
+
+Every new carousel and Reel names Milton Keynes in its on-screen copy and
+caption, includes `#MiltonKeynes` and `#MKLocal`, and closes with a local ReLoved
+call to action. Pre-localisation job files are intentionally rejected by the
+current validator; create a new job rather than resuming generic UK creative.
 
 ## One-time setup
 
@@ -177,7 +190,7 @@ schedule them across seven days. Successful Instagram receipts remain under
 each post's asset directory, and the Firebase deployment manifest is written
 to the job's `firebase-hosting/deployment.json`.
 
-### One-command daily carousel or Reel
+### One-command daily Milton Keynes carousel or Reel
 
 The daily runners create a one-post `daily_plan.json` and perform the same
 approval, generation, hosting, and publication flow for that post only:
@@ -187,8 +200,9 @@ python scripts/run_daily_carousel.py --date 2026-10-03 --seed 42
 python scripts/run_daily_reel.py --date 2026-10-04 --seed 43
 ```
 
-The Reel runner requires `ffmpeg`. It turns the six 9:16 final slides into a
-12-second H.264 MP4 by default (`--slide-seconds` changes the per-slide time),
+The Reel runner uses the FFmpeg binary bundled by `imageio-ffmpeg`. It turns
+the six 9:16 final slides into a 12-second H.264 MP4 by default
+(`--slide-seconds` changes the per-slide time),
 then selects the first music result from Instagram's current authorized
 trending list and attaches it when publishing. Pass `--audio-id <id>` to pin a
 specific authorized track instead.
@@ -203,7 +217,8 @@ token cannot be used for this flow. `INSTAGRAM_ACCESS_TOKEN` remains the token
 for the carousel and weekly Instagram Login runners. The authorized API
 catalog can differ from the audio visible in the Instagram app.
 
-Both commands support `--dry-run`, `--force`, and `--resume-job`. A successful
+Both commands support `--dry-run`, `--force`, and `--resume-job`. Only resume a
+job generated with the Milton Keynes campaign configuration. A successful
 Reel writes `instagram_reel_publication.json`; the carousel continues to write
 `instagram_publication.json`.
 

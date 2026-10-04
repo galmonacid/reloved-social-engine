@@ -18,6 +18,7 @@ def test_create_daily_job_contains_one_reproducible_post(tmp_path):
 
     assert first.name == "daily_plan.json"
     assert job["job_id"].startswith("daily-")
+    assert job["campaign"]["launch_city"] == "Milton Keynes"
     assert len(job["posts"]) == 1
     assert job["posts"][0]["day"] == 1
     with pytest.raises(JobError, match="already exists"):
@@ -74,7 +75,8 @@ def test_malformed_post_is_a_safe_error(tmp_path):
     path = tmp_path / "bad.json"
     path.write_text(json.dumps({
         "version": 1, "job_id": "x", "date": "2026-09-09", "timezone": "Europe/London",
-        "seed": 1, "created_at": "2026-09-09T00:00:00+00:00", "posts": [{}] * 7,
+        "seed": 1, "created_at": "2026-09-09T00:00:00+00:00",
+        "campaign": {"launch_city": "Milton Keynes"}, "posts": [{}] * 7,
     }), encoding="utf-8")
     with pytest.raises(JobError, match="invalid post"):
         load_job(path)

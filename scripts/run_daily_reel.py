@@ -18,14 +18,18 @@ from reloved_engine.instagram import (
     publish_reel_post,
 )
 from reloved_engine.jobs import JobError, create_daily_job, load_job, review_post
+from reloved_engine.market_config import TARGET_CITY
 from reloved_engine.reel import ReelRenderError, reel_video_path, render_reel_video
 
-DEFAULT_NOTE = "Automatically approved by scripts/run_daily_reel.py"
+DEFAULT_NOTE = f"Automatically approved for {TARGET_CITY} by scripts/run_daily_reel.py"
 
 
 def parser() -> argparse.ArgumentParser:
     command = argparse.ArgumentParser(
-        description="Generate, host, and publish one daily Reel with trending Instagram audio."
+        description=(
+            f"Generate, host, and publish one daily {TARGET_CITY} Reel with trending "
+            "Instagram audio."
+        )
     )
     command.add_argument("--date", help="Job date in YYYY-MM-DD (defaults to today UTC)")
     command.add_argument("--resume-job", help="Resume an approved daily Reel job")
@@ -128,7 +132,10 @@ def run(args: argparse.Namespace) -> Path:
     )
     receipt = publish_reel_post(job_file, post_id, video_url, audio, publisher)
     title = audio.get("title") or audio["audio_id"]
-    print(f"Published daily Reel with audio {title}: {receipt.get('permalink') or receipt['media_id']}")
+    print(
+        f"Published daily {TARGET_CITY} Reel with audio {title}: "
+        f"{receipt.get('permalink') or receipt['media_id']}"
+    )
     return job_file
 
 

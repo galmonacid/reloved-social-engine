@@ -5,19 +5,21 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from reloved_engine.hook_templates import Pillar
+from reloved_engine.market_config import TARGET_CITY
 
 Scene = str
 
 STREET_LOCK = (
-    "Casual iPhone photo in a typical UK residential neighbourhood, portrait 9:16. "
+    f"Casual iPhone photo in a typical {TARGET_CITY} residential neighbourhood, portrait 9:16. "
     "Natural overcast British daylight, realistic phone camera grain, eye-level framing, "
-    "brick terraced houses, parked cars, wheelie bins, worn pavements and small front gardens. "
+    "a mix of red-brick housing and modern estates, parked cars, wheelie bins, broad pavements, "
+    "green verges and a glimpse of a redway-style shared path. "
     "Authentic lived-in feel. Not staged. Not cinematic. No AI-art style. No exaggerated colours. "
     "No American elements. No readable text, logos, labels, signs, notes, receipts or prices; "
     "any incidental writing is blurred and unreadable. "
 )
 HOME_LOCK = (
-    "Casual iPhone photo inside a typical modest British family terraced house, portrait 9:16. "
+    f"Casual iPhone photo inside a typical modest {TARGET_CITY} family home, portrait 9:16. "
     "Natural daylight through a white UPVC window, realistic phone camera grain, practical mixed "
     "furniture and warm, ordinary decor. The home is comfortably cluttered with believable signs "
     "of busy family life: coats and shoes in the hallway, toys, a laundry basket, post and crowded "
@@ -28,7 +30,8 @@ HOME_LOCK = (
     "blurred and unreadable. "
 )
 SHOP_LOCK = (
-    "Casual iPhone photo inside a small UK charity shop or modest shop aisle, portrait 9:16. "
+    f"Casual iPhone photo inside a small {TARGET_CITY} charity shop or modest shop aisle, "
+    "portrait 9:16. "
     "Natural indoor lighting, realistic phone camera grain, everyday shelves and a slightly cluttered "
     "but authentic atmosphere. Not staged. Not cinematic. No AI-art style. No exaggerated colours. "
     "No American elements. No readable text, logos, labels, signs, notes, receipts or prices; "
@@ -65,13 +68,22 @@ BEATS: dict[Pillar, list[str]] = {
         "A closer view of the {object_name}, with normal wear but clearly not broken.",
         "The {object_name} sitting unused among the belongings in the family home, casually framed.",
         "The {object_name} by a hallway or front door during an ordinary clear-out.",
-        "The {object_name} placed neatly outside a UK home for someone to take, with no sign or note.",
+        (
+            f"The {{object_name}} placed neatly outside a {TARGET_CITY} home for someone to take, "
+            "with no sign or note."
+        ),
         "The {object_name} in use in a different modest home, casual and unposed.",
     ],
     "C_FINDER": [
         "A used {object_name} at home, as if considering whether to replace it, no visible branding.",
-        "A similar {object_name} on a small UK charity-shop shelf; stickers and labels are unreadable.",
-        "A usable {object_name} placed neatly outside a UK home for someone to take, with no sign or note.",
+        (
+            f"A similar {{object_name}} on a small {TARGET_CITY} charity-shop shelf; stickers and "
+            "labels are unreadable."
+        ),
+        (
+            f"A usable {{object_name}} placed neatly outside a {TARGET_CITY} home for someone to "
+            "take, with no sign or note."
+        ),
         "A close casual view of the usable {object_name} outside on the pavement.",
         "The {object_name} now at home, looking like part of ordinary daily life.",
         "The {object_name} being used naturally at home, warm but realistic everyday light.",
