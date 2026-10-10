@@ -37,7 +37,8 @@ cannot silently select a more expensive tier.
 ## Overlay specification
 
 - Canvas: 1080 × 1920 pixels (9:16).
-- Safe text area: x=90, y=160, width=900, maximum height=520.
+- Safe text area: x=90, y=300, width=900, maximum height=520. The 300px top
+  inset keeps Reel copy below Instagram's account and audio overlays.
 - Legibility: black rounded rectangle at 45% opacity.
 - Typeface: bold Arial where present, otherwise DejaVu Sans Bold.
 - Size: hook up to 104px; remaining slides up to 76px; never smaller than 58px.

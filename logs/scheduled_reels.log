@@ -4,3 +4,45 @@
 Created, approved, and planned: daily-2026-10-04-a5ecf574-1 (/tmp/reloved-launchd-wrapper-test/2026-10-04/assets/daily-2026-10-04-a5ecf574-1/image_prompts.json)
 Dry run complete: no images, video, Firebase deployment, or Reel was created.
 [Sun Oct  4 08:03:00 BST 2026] Script finished with status 0.
+[Sun Oct  4 08:10:07 BST 2026] Scheduled run started; waiting 0 seconds.
+/Users/guillermo/Developer/ReLoved Social Engine/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Created, approved, and planned: daily-2026-10-04-44d177b5-1 (/tmp/reloved-launchd-wrapper-test/2026-10-04/assets/daily-2026-10-04-44d177b5-1/image_prompts.json)
+Dry run complete: no images, video, Firebase deployment, or Reel was created.
+[Sun Oct  4 08:10:07 BST 2026] Script finished with status 0.
+[Sun Oct  4 18:45:04 BST 2026] Scheduled run started; waiting 1440 seconds.
+/Users/guillermo/Developer/ReLoved Social Engine/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Error: OPENAI_API_KEY is required unless --dry-run is used
+Created, approved, and planned: daily-2026-10-04-f565e110-1 (jobs/2026-10-04/assets/daily-2026-10-04-f565e110-1/image_prompts.json)
+[Sun Oct  4 19:09:04 BST 2026] Script finished with status 2.
+[Tue Oct  6 19:45:00 BST 2026] Scheduled run started; waiting 1439 seconds.
+/Users/guillermo/Developer/ReLoved Social Engine/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Error: OPENAI_API_KEY is required unless --dry-run is used
+Created, approved, and planned: daily-2026-10-06-b3c5c385-1 (jobs/2026-10-06/assets/daily-2026-10-06-b3c5c385-1/image_prompts.json)
+[Tue Oct  6 20:08:59 BST 2026] Script finished with status 2.
+[Wed Oct  7 07:14:41 BST 2026] Scheduled run started; waiting 0 seconds.
+/Users/guillermo/Developer/ReLoved Social Engine/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Created, approved, and planned: daily-2026-10-07-13ef0803-1 (/tmp/reloved-launchd-wrapper-test/2026-10-07/assets/daily-2026-10-07-13ef0803-1/image_prompts.json)
+Dry run complete: no images, video, Firebase deployment, or Reel was created.
+[Wed Oct  7 07:14:41 BST 2026] Script finished with status 0.
+[Wed Oct  7 19:45:00 BST 2026] Scheduled run started; waiting 1537 seconds.
+/Users/guillermo/Developer/ReLoved Social Engine/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Error: Instagram API rejected the request: Error validating access token: Session has expired on Wednesday, 07-Oct-26 01:00:00 PDT. The current time is Wednesday, 07-Oct-26 12:10:38 PDT. (code 190)
+Created, approved, and planned: daily-2026-10-07-e27f3178-1 (jobs/2026-10-07/assets/daily-2026-10-07-e27f3178-1/image_prompts.json)
+[Wed Oct  7 20:10:38 BST 2026] Script finished with status 2.
+[Thu Oct  8 19:45:02 BST 2026] Scheduled run started; waiting 992 seconds.
+/Users/guillermo/Developer/ReLoved Social Engine/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Error: Instagram API rejected the request: Error validating access token: Session has expired on Wednesday, 07-Oct-26 01:00:00 PDT. The current time is Thursday, 08-Oct-26 12:01:34 PDT. (code 190)
+Created, approved, and planned: daily-2026-10-08-0f702a7d-1 (jobs/2026-10-08/assets/daily-2026-10-08-0f702a7d-1/image_prompts.json)
+[Thu Oct  8 20:01:35 BST 2026] Script finished with status 2.
+[Sat Oct 10 16:59:23 BST 2026] Scheduled run started; waiting 0 seconds.
+/Users/guillermo/Developer/ReLoved Social Engine/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Created, approved, and planned: daily-2026-10-10-a429c1f7-1 (/tmp/reloved-launchd-wrapper-test/2026-10-10/assets/daily-2026-10-10-a429c1f7-1/image_prompts.json)
+Dry run complete: no images, video, Firebase deployment, or Reel was created.
+[Sat Oct 10 16:59:23 BST 2026] Script finished with status 0.

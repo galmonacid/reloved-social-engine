@@ -153,3 +153,38 @@ def test_daily_reel_full_run_renders_and_publishes_one_post(tmp_path, monkeypatc
     assert daily.main(["--date", "2026-10-06", "--jobs-dir", str(jobs)]) == 0
     assert len(published) == 1
     assert published[0][1]["audio_id"] == "audio-1"
+
+
+@pytest.mark.parametrize("failure_stage", ["account", "audio"])
+def test_reel_auth_failure_creates_no_job(tmp_path, monkeypatch, failure_stage):
+    daily = load_script("run_daily_reel")
+    for name in (
+        "OPENAI_API_KEY", "INSTAGRAM_USER_ID", "INSTAGRAM_FACEBOOK_PAGE_ACCESS_TOKEN",
+        "INSTAGRAM_FACEBOOK_USER_ACCESS_TOKEN", "FIREBASE_PROJECT_ID", "FIREBASE_HOSTING_SITE",
+    ):
+        monkeypatch.setenv(name, "test-value")
+
+    class Publisher:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def account(self):
+            if failure_stage == "account":
+                raise daily.InstagramPublishError("Page token expired")
+            return {"id": "ig-user"}
+
+        def trending_audio(self, audio_type):
+            raise daily.InstagramPublishError("User token expired")
+
+    monkeypatch.setattr(daily, "InstagramPublisher", Publisher)
+    jobs = tmp_path / "jobs"
+    assert daily.main(["--jobs-dir", str(jobs)]) == 2
+    assert not jobs.exists()
+
+
+def test_reel_check_auth_creates_no_job(tmp_path, monkeypatch):
+    daily = load_script("run_daily_reel")
+    monkeypatch.setattr(daily, "check_auth", lambda args: (object(), {"audio_id": "audio-1"}))
+    jobs = tmp_path / "jobs"
+    assert daily.main(["--jobs-dir", str(jobs), "--check-auth"]) == 0
+    assert not jobs.exists()

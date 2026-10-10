@@ -6,6 +6,7 @@ from reloved_engine.overlay import (
     BOX,
     CANVAS,
     INSTAGRAM_CANVAS,
+    REEL_TOP_SAFE_AREA,
     render_instagram_overlays,
     render_overlays,
 )
@@ -67,6 +68,11 @@ def test_overlay_renders_six_9_by_16_pngs(tmp_path):
     # pixels: source colour remains visible beneath the 45%-opaque panel.
     panel_pixel = Image.open(output[0]).getpixel((BOX[2] - 60, BOX[1] + 60))
     assert panel_pixel == (38, 71, 99)
+
+
+def test_reel_overlay_stays_below_instagram_header_controls():
+    assert REEL_TOP_SAFE_AREA == 300
+    assert BOX[1] >= REEL_TOP_SAFE_AREA
 
 
 def test_overlay_rejects_copy_that_cannot_fit(tmp_path):

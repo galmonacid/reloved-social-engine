@@ -8,7 +8,11 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 CANVAS = (1080, 1920)
-BOX = (90, 160, 990, 680)
+# Instagram draws the account name, audio attribution, and other controls over
+# the top of a Reel. Keep the text panel below that chrome so the hook remains
+# fully readable in the published 9:16 view.
+REEL_TOP_SAFE_AREA = 300
+BOX = (90, REEL_TOP_SAFE_AREA, 990, 820)
 INSTAGRAM_CANVAS = (1080, 1350)
 INSTAGRAM_BOX = (90, 110, 990, 630)
 PANEL_ALPHA = 115  # 45% opaque black, per the visual lock.

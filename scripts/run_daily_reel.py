@@ -60,10 +60,21 @@ def parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Create, approve, and plan only; make no external calls or video",
     )
+    command.add_argument(
+        "--check-auth", action="store_true",
+        help="Validate configuration and Meta access without creating or publishing a job",
+    )
     return command
 
 
 def run(args: argparse.Namespace) -> Path:
+    publisher = None
+    audio = {}
+    if not args.dry_run or args.check_auth:
+        publisher, audio = check_auth(args)
+    if args.check_auth:
+        print("Authentication checks passed; no content was created or published.")
+        return Path(args.jobs_dir)
     resume = bool(args.resume_job)
     if resume:
         job_file = Path(args.resume_job)
@@ -81,25 +92,6 @@ def run(args: argparse.Namespace) -> Path:
     if args.dry_run:
         print("Dry run complete: no images, video, Firebase deployment, or Reel was created.")
         return job_file
-
-    _required_secret("OPENAI_API_KEY")
-    instagram_user_id = _required_secret("INSTAGRAM_USER_ID")
-    instagram_token = _required_facebook_token(
-        "INSTAGRAM_FACEBOOK_PAGE_ACCESS_TOKEN", "Page"
-    )
-    audio_token = _required_facebook_token(
-        "INSTAGRAM_FACEBOOK_USER_ACCESS_TOKEN", "User"
-    )
-    _require_firebase(args)
-    publisher = InstagramPublisher(
-        instagram_user_id,
-        instagram_token,
-        args.instagram_api_version,
-        graph_root=FACEBOOK_GRAPH_ROOT,
-        audio_access_token=audio_token,
-    )
-    account = publisher.account()
-    print(f"Verified Instagram account: {account.get('username', account.get('id'))}")
 
     post_id = load_job(job_file)["posts"][0]["id"]
     video_path = reel_video_path(job_file, post_id)
@@ -125,11 +117,7 @@ def run(args: argparse.Namespace) -> Path:
     video_url = deploy_instagram_reel(
         job_file, post_id, args.firebase_project, args.firebase_site
     )
-    audio = (
-        {"audio_id": args.audio_id, "audio_type": "music"}
-        if args.audio_id
-        else publisher.trending_audio("music")
-    )
+    assert publisher is not None
     receipt = publish_reel_post(job_file, post_id, video_url, audio, publisher)
     title = audio.get("title") or audio["audio_id"]
     print(
@@ -137,6 +125,34 @@ def run(args: argparse.Namespace) -> Path:
         f"{receipt.get('permalink') or receipt['media_id']}"
     )
     return job_file
+
+
+def check_auth(args: argparse.Namespace) -> tuple[InstagramPublisher, dict]:
+    _required_secret("OPENAI_API_KEY")
+    instagram_user_id = _required_secret("INSTAGRAM_USER_ID")
+    instagram_token = _required_facebook_token(
+        "INSTAGRAM_FACEBOOK_PAGE_ACCESS_TOKEN", "Page"
+    )
+    audio_token = _required_facebook_token(
+        "INSTAGRAM_FACEBOOK_USER_ACCESS_TOKEN", "User"
+    )
+    _require_firebase(args)
+    publisher = InstagramPublisher(
+        instagram_user_id,
+        instagram_token,
+        args.instagram_api_version,
+        graph_root=FACEBOOK_GRAPH_ROOT,
+        audio_access_token=audio_token,
+    )
+    account = publisher.account()
+    print(f"Verified Instagram account: {account.get('username', account.get('id'))}")
+
+    audio = (
+        {"audio_id": args.audio_id, "audio_type": "music"}
+        if args.audio_id
+        else publisher.trending_audio("music")
+    )
+    return publisher, audio
 
 
 def _required_secret(name: str) -> str:
